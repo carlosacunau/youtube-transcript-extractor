@@ -241,15 +241,6 @@ const TranscriptExtractor = (() => {
    * Method 3: Scrape YouTube's built-in transcript panel from the DOM
    */
   async function fetchFromDOM() {
-    // Click the "Show transcript" button if it exists
-    const showBtn = document.querySelector(
-      'button[aria-label="Show transcript"]'
-    );
-    if (showBtn) {
-      showBtn.click();
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    }
-
     const segments = document.querySelectorAll(
       "#segments-container ytd-transcript-segment-renderer"
     );

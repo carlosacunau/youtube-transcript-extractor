@@ -362,6 +362,13 @@
 
   // --- Utility ---
 
+  function closeNativeTranscriptPanel() {
+    const panel = document.querySelector(
+      'ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-searchable-transcript"]'
+    );
+    if (panel) panel.setAttribute("visibility", "ENGAGEMENT_PANEL_VISIBILITY_HIDDEN");
+  }
+
   function escapeHTML(str) {
     const div = document.createElement("div");
     div.textContent = str;
@@ -398,6 +405,7 @@
       renderChapters(chapters);
       renderTranscript(entries);
       renderLanguageButtons(languages, selectedLang);
+      closeNativeTranscriptPanel();
     } catch (err) {
       showError(
         "No transcript available for this video. The video may not have captions enabled."
