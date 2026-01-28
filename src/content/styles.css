@@ -1,0 +1,335 @@
+/* YouTube Transcript Extractor Styles */
+
+.yte_container {
+  background-color: #ffffff;
+  padding: 8px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  position: relative;
+  font-family: "Roboto", "Arial", sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Dark theme */
+.yte_dark {
+  background-color: #0f0f0f !important;
+  color: #e8e8e8 !important;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.yte_light {
+  background-color: #ffffff !important;
+  color: #0f0f0f !important;
+}
+
+/* Close button */
+.yte_close_btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 2px;
+  opacity: 0.6;
+  z-index: 1;
+}
+
+.yte_container:hover .yte_close_btn {
+  display: flex;
+}
+
+.yte_close_btn:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.yte_dark .yte_close_btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Header */
+.yte_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 0;
+}
+
+.yte_header_left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.yte_icon {
+  display: flex;
+  align-items: center;
+}
+
+.yte_header_text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.yte_header_actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Action buttons */
+.yte_action_btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 18px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  color: inherit;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.yte_action_btn:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.yte_action_btn:active {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+.yte_dark .yte_action_btn {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.yte_dark .yte_action_btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.yte_dark .yte_action_btn:active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Toggle button */
+.yte_toggle_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  color: inherit;
+  transition: transform 0.2s ease;
+}
+
+.yte_toggle_btn:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.yte_dark .yte_toggle_btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.yte_toggle_btn.yte_rotated {
+  transform: rotate(180deg);
+}
+
+/* Language selector */
+.yte_lang_select {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 6px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.yte_lang_select::-webkit-scrollbar {
+  display: none;
+}
+
+.yte_lang_btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  background-color: rgba(0, 0, 0, 0.04);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: inherit;
+  transition: background-color 0.2s;
+}
+
+.yte_lang_btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.yte_lang_selected {
+  background-color: #0f0f0f !important;
+  color: #ffffff !important;
+}
+
+.yte_dark .yte_lang_btn {
+  border-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.yte_dark .yte_lang_btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.yte_dark .yte_lang_selected {
+  background-color: #e8e8e8 !important;
+  color: #0f0f0f !important;
+}
+
+/* Body */
+.yte_body {
+  display: none;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.yte_dark .yte_body {
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Scrollbar styling */
+.yte_body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.yte_body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.yte_body::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.yte_dark .yte_body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Loading */
+.yte_loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  gap: 12px;
+  color: inherit;
+  opacity: 0.7;
+  font-size: 13px;
+}
+
+.yte_spinner {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid rgba(0, 0, 0, 0.15);
+  border-top-color: #065fd4;
+  border-radius: 50%;
+  animation: yte_spin 0.6s linear infinite;
+}
+
+.yte_dark .yte_spinner {
+  border-color: rgba(255, 255, 255, 0.15);
+  border-top-color: #3ea6ff;
+}
+
+@keyframes yte_spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error */
+.yte_error {
+  padding: 16px;
+  text-align: center;
+  color: inherit;
+  opacity: 0.7;
+  font-size: 13px;
+}
+
+/* Transcript segments */
+.yte_transcript_list {
+  padding: 0 4px;
+}
+
+.yte_segment {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 6px 4px;
+  border-radius: 4px;
+  transition: background-color 0.15s;
+}
+
+.yte_segment:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.yte_dark .yte_segment:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.yte_segment_active {
+  background-color: rgba(6, 95, 212, 0.08) !important;
+}
+
+.yte_dark .yte_segment_active {
+  background-color: rgba(62, 166, 255, 0.12) !important;
+}
+
+.yte_timestamp {
+  color: #065fd4;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 40px;
+  font-family: "Roboto Mono", monospace;
+}
+
+.yte_dark .yte_timestamp {
+  color: #3ea6ff;
+}
+
+.yte_timestamp:hover {
+  text-decoration: underline;
+}
+
+.yte_text {
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* Responsive - hide on narrow screens */
+@media (max-width: 1000px) {
+  .yte_container {
+    display: none;
+  }
+}
