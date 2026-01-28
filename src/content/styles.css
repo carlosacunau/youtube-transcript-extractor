@@ -273,6 +273,51 @@
   font-size: 13px;
 }
 
+/* Chapters */
+.yte_chapters {
+  padding: 0 4px 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.yte_dark .yte_chapters {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.yte_chapters_header {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.5;
+  margin-bottom: 6px;
+  padding: 0 4px;
+}
+
+.yte_chapter {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 5px 4px;
+  border-radius: 4px;
+  transition: background-color 0.15s;
+}
+
+.yte_chapter:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.yte_dark .yte_chapter:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.yte_chapter_title {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
 /* Transcript segments */
 .yte_transcript_list {
   padding: 0 4px;

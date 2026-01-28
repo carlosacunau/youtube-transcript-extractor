@@ -37,12 +37,97 @@ const TranscriptExtractor = (() => {
   }
 
   /**
+   * Cache the fetched page HTML to avoid duplicate requests
+   */
+  let _pageCache = { videoId: null, html: null };
+
+  async function getPageHTML(videoId) {
+    if (_pageCache.videoId === videoId && _pageCache.html) {
+      return _pageCache.html;
+    }
+    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
+    const html = await response.text();
+    _pageCache = { videoId, html };
+    return html;
+  }
+
+  /**
+   * Extract chapters from the player response.
+   * Chapters are in playerOverlayRenderer > decoratedPlayerBarRenderer > chapters.
+   * Falls back to parsing timestamps from the video description.
+   */
+  async function getChapters(videoId) {
+    const html = await getPageHTML(videoId);
+
+    // Method 1: Extract from macroMarkersListRenderer (structured chapter data)
+    try {
+      const chaptersMatch = html.match(
+        /"macroMarkersListRenderer"\s*:\s*\{"contents"\s*:\s*(\[.+?\])\s*\}/
+      );
+      if (chaptersMatch) {
+        const markers = JSON.parse(chaptersMatch[1]);
+        const chapters = markers
+          .map((m) => {
+            const renderer = m?.macroMarkersListItemRenderer;
+            if (!renderer) return null;
+            const title = renderer.title?.simpleText || "";
+            const startMs = parseInt(
+              renderer.onTap?.watchEndpoint?.startTimeSeconds ||
+                renderer.timeDescription?.simpleText?.split(":").reduce(
+                  (acc, part) => acc * 60 + parseInt(part, 10),
+                  0
+                ) ||
+                "0",
+              10
+            );
+            return title ? { title, start: startMs } : null;
+          })
+          .filter(Boolean);
+
+        if (chapters.length > 0) return chapters;
+      }
+    } catch {}
+
+    // Method 2: Parse timestamps from video description
+    try {
+      const descMatch = html.match(
+        /"shortDescription"\s*:\s*"((?:[^"\\]|\\.)*)"/
+      );
+      if (descMatch) {
+        const desc = descMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"');
+        const lines = desc.split("\n");
+        const chapters = [];
+
+        for (const line of lines) {
+          const match = line.match(
+            /(?:^|\s)((?:\d{1,2}:)?\d{1,2}:\d{2})\s*[-–—)}\]:]?\s*(.+)/
+          );
+          if (match) {
+            const parts = match[1].split(":").map(Number);
+            let seconds = 0;
+            if (parts.length === 3) {
+              seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+            } else {
+              seconds = parts[0] * 60 + parts[1];
+            }
+            const title = match[2].trim();
+            if (title) chapters.push({ title, start: seconds });
+          }
+        }
+
+        if (chapters.length >= 3) return chapters;
+      }
+    } catch {}
+
+    return [];
+  }
+
+  /**
    * Get caption tracks from the page's player response data.
    * Glasp's approach: split page source on "captions": to find captionTracks.
    */
   async function getCaptionTracks(videoId) {
-    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
-    const html = await response.text();
+    const html = await getPageHTML(videoId);
 
     try {
       const split = html.split('"captions":');
@@ -85,9 +170,7 @@ const TranscriptExtractor = (() => {
    * Method 2: Fetch via YouTube's internal get_transcript API
    */
   async function fetchFromInternalAPI(videoId) {
-    // First, get the transcript params from the page
-    const pageResponse = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
-    const html = await pageResponse.text();
+    const html = await getPageHTML(videoId);
 
     // Extract serialized transcript params
     const paramsMatch = html.match(
@@ -283,6 +366,7 @@ const TranscriptExtractor = (() => {
     getVideoId,
     getTranscript,
     getTranscriptForLanguage,
+    getChapters,
     formatTimestamp,
   };
 })();

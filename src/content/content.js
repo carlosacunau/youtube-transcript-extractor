@@ -9,6 +9,7 @@
 
   let currentVideoId = null;
   let currentTranscriptData = null;
+  let currentChaptersData = null;
 
   // --- Theme Detection ---
 
@@ -63,6 +64,10 @@
           </div>
           <div class="yte_error" id="yte_error" style="display:none;">
             <p id="yte_error_msg">No transcript available</p>
+          </div>
+          <div class="yte_chapters" id="yte_chapters" style="display:none;">
+            <div class="yte_chapters_header">Chapters</div>
+            <div class="yte_chapters_list" id="yte_chapters_list"></div>
           </div>
           <div class="yte_transcript_list" id="yte_transcript_list"></div>
         </div>
@@ -157,6 +162,36 @@
     });
   }
 
+  function renderChapters(chapters) {
+    const container = document.getElementById("yte_chapters");
+    const list = document.getElementById("yte_chapters_list");
+    if (!container || !list || !chapters || chapters.length === 0) {
+      if (container) container.style.display = "none";
+      return;
+    }
+
+    container.style.display = "block";
+    list.innerHTML = chapters
+      .map(
+        (ch) => `
+        <div class="yte_chapter" data-start="${ch.start}">
+          <span class="yte_timestamp" data-start="${ch.start}">
+            ${TranscriptExtractor.formatTimestamp(ch.start)}
+          </span>
+          <span class="yte_chapter_title">${escapeHTML(ch.title)}</span>
+        </div>
+      `
+      )
+      .join("");
+
+    list.querySelectorAll(".yte_timestamp").forEach((el) => {
+      el.addEventListener("click", () => {
+        const seconds = parseInt(el.getAttribute("data-start"), 10);
+        seekVideo(seconds);
+      });
+    });
+  }
+
   function renderLanguageButtons(languages, selectedLang) {
     const container = document.getElementById("yte_lang_select");
     if (!container || !languages || languages.length <= 1) {
@@ -235,15 +270,37 @@
 
   // --- Actions ---
 
+  function formatOutput() {
+    const parts = [];
+
+    if (currentChaptersData && currentChaptersData.length > 0) {
+      parts.push("CHAPTERS");
+      parts.push("--------");
+      currentChaptersData.forEach((ch) => {
+        parts.push(
+          `${TranscriptExtractor.formatTimestamp(ch.start)} - ${ch.title}`
+        );
+      });
+      parts.push("");
+      parts.push("TRANSCRIPT");
+      parts.push("----------");
+    }
+
+    if (currentTranscriptData) {
+      currentTranscriptData.forEach((entry) => {
+        parts.push(
+          `${TranscriptExtractor.formatTimestamp(entry.start)} - ${entry.text}`
+        );
+      });
+    }
+
+    return parts.join("\n");
+  }
+
   function copyTranscript() {
     if (!currentTranscriptData || currentTranscriptData.length === 0) return;
 
-    const text = currentTranscriptData
-      .map(
-        (entry) =>
-          `${TranscriptExtractor.formatTimestamp(entry.start)} - ${entry.text}`
-      )
-      .join("\n");
+    const text = formatOutput();
 
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById("yte_copy_btn");
@@ -260,12 +317,7 @@
   function downloadTranscript() {
     if (!currentTranscriptData || currentTranscriptData.length === 0) return;
 
-    const text = currentTranscriptData
-      .map(
-        (entry) =>
-          `${TranscriptExtractor.formatTimestamp(entry.start)} - ${entry.text}`
-      )
-      .join("\n");
+    const text = formatOutput();
 
     const title = document.title.replace(" - YouTube", "").trim();
     const safeName = title.replace(/[^a-z0-9\s\-_]/gi, "").substring(0, 100);
@@ -334,11 +386,16 @@
     if (body) body.style.display = "block";
 
     try {
-      const { entries, languages, selectedLang } =
-        await TranscriptExtractor.getTranscript(videoId);
+      const [{ entries, languages, selectedLang }, chapters] =
+        await Promise.all([
+          TranscriptExtractor.getTranscript(videoId),
+          TranscriptExtractor.getChapters(videoId).catch(() => []),
+        ]);
 
       currentTranscriptData = entries;
+      currentChaptersData = chapters;
       showTranscript();
+      renderChapters(chapters);
       renderTranscript(entries);
       renderLanguageButtons(languages, selectedLang);
     } catch (err) {
